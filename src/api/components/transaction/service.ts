@@ -1,42 +1,25 @@
 import { TransactionReq, Transaction } from "./model";
+import { TransactionRepository } from "./repository";
 
 export interface TransactionService {
-    getAllTransactions(): Transaction[]
-    getTransactionById(tx_id: number): Transaction
+    getAllTransactions(): Promise<Transaction[]>
+    getTransactionById(tx_id: number): Promise<Transaction>
 }
 
 export class TransactionServiceImp implements TransactionService{
 
-    public getAllTransactions(): Transaction[] {
-        try{
-            const transactions: Transaction[] = [{
-                transaction_id: 1,
-                wallet_id: 1,
-                type: "",
-                payee: "",
-                amount: 1,
-                status: "string",
-                
-            }]
-            return transactions
-        } catch(error){
-            throw new Error("fallo")
-        }
+    private transactionRepository : TransactionRepository
+    
+    constructor(transactionRepository: TransactionRepository){
+        this.transactionRepository = transactionRepository
     }
-    public getTransactionById(tx_id: number): Transaction {
-        try{
-            const transactions: Transaction = {
-                transaction_id: 1,
-                wallet_id: 1,
-                type: "",
-                payee: "",
-                amount: 1,
-                status: "string",
-                
-            }
-            return transactions
-        } catch(error){
-            throw new Error("fallo")
-        }
+
+    public async getAllTransactions(): Promise<Transaction[]> {
+        const transactions = await this.transactionRepository.getAllTransactions()
+        return transactions
+    }
+    public async getTransactionById(tx_id: number): Promise<Transaction> {
+        const transaction = await this.transactionRepository.getByIdTransaction(tx_id)
+        return transaction
     }
 }
