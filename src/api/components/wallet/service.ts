@@ -1,4 +1,4 @@
-import { WalletCreateRes, WalletCreateReq, WalletDBInsert, WalletDBRes } from "./model";
+import { WalletCreateRes, WalletCreateReq, WalletDBInsert, WalletDBRes, WalletRechargeReq, WalletRechargeRes } from "./model";
 import { WalletRepository } from "./repository";
 import { GetByIdError } from "../../../utils/customErrors";
 
@@ -6,8 +6,8 @@ export interface WalletService {
     createWallet(walletReq: WalletCreateReq): Promise<WalletCreateRes>
     getWalletByUserId(userId: number): Promise<WalletDBRes>
     getWalletById(walletId: number): Promise<WalletDBRes>
-    /*rechargeWallet(walletId: number, walletReq: WalletRechargeReq, walletDbRes: WalletDBRes): WalletDBRes
-    limitTxAmountWallet(walletId: number, walletReq: WalletMaxAmountReq, walletDbRes: WalletDBRes): WalletDBRes*/
+    rechargeWallet(walletId: number, walletReq: WalletRechargeReq, walletDbRes: WalletDBRes): WalletDBRes
+    /*limitTxAmountWallet(walletId: number, walletReq: WalletMaxAmountReq, walletDbRes: WalletDBRes): WalletDBRes*/
 }
 
 export class WalletServiceImp implements WalletService {
@@ -51,5 +51,15 @@ export class WalletServiceImp implements WalletService {
     public async getWalletById(walletId: number): Promise<WalletDBRes> {
         return await this.walletRepository.getWalletById(walletId)
         
+    }
+
+    public rechargeWallet(walletId: number, walletReq: WalletRechargeReq, walletDbRes: WalletDBRes): WalletDBRes {
+        const dataWalletUpdate: WalletRechargeRes = {
+            amount: walletReq.amount,
+            updated_at:new Date()
+        } 
+        const updateWallet = {...walletDbRes, ...dataWalletUpdate}
+        this.walletRepository.updateWallet(walletId, dataWalletUpdate) 
+        return updateWallet
     }
 }

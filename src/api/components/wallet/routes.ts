@@ -12,10 +12,10 @@ const walletController: WalletController = new WalletControllerImp(walletService
 router.post('/create', walletController.createWallet.bind(walletController))
 
 //Recharge Wallet
-router.patch('/:wallet_id/recharge', )
+router.patch('/:wallet_id/recharge', walletController.rechargeWallet.bind(walletController))
 
 //Refund Wallet
-router.post('/:wallet_id/refund', )
+router.patch('/:wallet_id/refund', walletController.refundWallet.bind(walletController))
 
 //Tx amount limit
 router.post('/:wallet_id/limit' )

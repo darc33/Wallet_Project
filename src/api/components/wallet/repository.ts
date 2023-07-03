@@ -1,6 +1,6 @@
 import {db} from '../../../config/database'
-import { WalletCreateReq, WalletDBRes } from "./model";
-import { CreateError, GetByIdError } from '../../../utils/customErrors';
+import { WalletCreateReq, WalletDBRes, WalletRechargeRes } from "./model";
+import { CreateError, GetByIdError, UpdateError } from '../../../utils/customErrors';
 import logger from '../../../utils/logger';
 
 export class WalletRepository{
@@ -31,6 +31,15 @@ export class WalletRepository{
         } catch (error){
             logger.error(error)
             throw new GetByIdError("Failed getting wallet by id", 'wallet')
+        }
+    }
+
+    public async updateWallet(wallet_id: number, updates: Partial<WalletRechargeRes>): Promise<void>{
+        try{
+            await db('wallet').where({wallet_id}).update(updates)
+        } catch (error){
+            console.error(error)
+            throw new UpdateError("Failed updating wallet", 'wallet')
         }
     }
 }
