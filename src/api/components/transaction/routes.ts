@@ -12,6 +12,7 @@ const walletRepository = new WalletRepository()
 const walletService = new WalletServiceImp(walletRepository)
 const transactionController: TransactionController = new TransactionControllerImp(transactionService, walletService)
 
+transactionService.startListenNotify()
 //Create Transaction
 router.post('/create', transactionController.createTx.bind(transactionController) )
 
