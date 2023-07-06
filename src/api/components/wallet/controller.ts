@@ -5,7 +5,7 @@ import { WalletService } from "./service"
 import { rechargeValidation, maxAmountValidation } from "./validations/wallet.validations"
 
 export interface WalletController {
-    createWallet(req: Request, res: Response): void
+    createWallet(req: Request, res: Response): Promise<void>
     rechargeWallet(req: Request, res: Response): void
     refundWallet(req: Request, res: Response): void
     limitTxAmountWallet(req: Request, res: Response): void
@@ -18,33 +18,26 @@ export class WalletControllerImp implements WalletController{
         this.walletService = walletService
     }
 
-    public createWallet(req: Request, res: Response): void{
+    public async createWallet(req: Request, res: Response): Promise<void>{
         const bodyReq: WalletCreateReq = req.body
 
-        this.walletService.getWalletByUserId(bodyReq.user_id)
-        .then(
-            (user) =>{
+        try {
+            await this.walletService.getWalletByUserId(bodyReq.user_id)
+            res.status(400).json({
+                type: "walletCreate",
+                message: "User id already have wallet"
+            })
+        } catch (error1) {
+            try {
+                const wallet = await this.walletService.createWallet(bodyReq)
+                res.status(201).json(wallet)
+            } catch (error){
                 res.status(400).json({
                     type: "walletCreate",
-                    message: "User id already have wallet"
+                    message: "Failed Creating a Wallet"
                 })
-                
-            },
-            (error) => {
-                this.walletService.createWallet(bodyReq)
-                .then(
-                    (wallet) => {
-                        res.status(201).json(wallet)
-                    },
-                    (error) => {
-                        res.status(400).json({
-                            type: error.name,
-                            message: "Failed Creating a Wallet"
-                        })
-                    }
-                )
             }
-        )           
+        }           
     }
 
     public async rechargeWallet(req: Request, res: Response): Promise<void> {
