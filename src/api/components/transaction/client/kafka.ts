@@ -1,6 +1,6 @@
 import { EachMessagePayload, Kafka  } from "kafkajs"
 import logger from "../../../../utils/logger"
-import {Transaction } from "../model"
+import {Transaction, UpdateTransaction } from "../model"
 
 export class KafkaClient {
     private kafka: Kafka
@@ -13,7 +13,7 @@ export class KafkaClient {
             brokers: ["localhost:9092"]
         })
         this.producer = this.kafka.producer()
-        this.consumer = this.kafka.consumer({ groupId: 'newConsummer2'})
+        this.consumer = this.kafka.consumer({ groupId: 'newConsummer4'})
     }
 
     async sendNotification(topic: string, message: Transaction) {
@@ -38,15 +38,19 @@ export class KafkaClient {
         }
     }
 
-    async Listener(topic: string, processMessage: (message: string) => void) {
+    async Listener(topic: string, updateTransaction: (id: number, updates: UpdateTransaction) => void) {
         await this.consumer.connect()
         await this.consumer.subscribe({ topic: topic, fromBeginning: true })
         await this.consumer.run({
             eachMessage: async ({message}: EachMessagePayload) => {
-                //console.log(`Partion: ${partition}`)
-                //console.log(`Message Value: ${message.value?.toString()}`)
                 const noti =  message.value?.toString()
-                processMessage((noti==undefined)?"": noti)
+                const data:Transaction = JSON.parse((noti==undefined)?"": noti)
+                const updateTx: UpdateTransaction = {
+                    updated_at: new Date(),
+                    status: (data.status=='existoso')? data.status: 'existoso'
+                }
+                console.log(noti)
+                updateTransaction(data.transaction_id, updateTx)
             }
         })
     }

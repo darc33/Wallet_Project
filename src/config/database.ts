@@ -14,8 +14,4 @@ const db = knex({
     },
 })
 
-const connString = (process.env.POSTGRES_URI) ? process.env.POSTGRES_URI : 'postgresql://postgres:changeme@localhost:5432/wallet';
-const pgp = pgPromise()
-const db1 = pgp(connString)
-
-export {db, db1}
+export {db}
