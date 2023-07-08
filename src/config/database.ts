@@ -1,12 +1,14 @@
 import { knex } from "knex";
 import dotenv from 'dotenv'
-import pgPromise from 'pg-promise'
+import configDb from '../db/knexfile'
+
+configDb
 
 dotenv.config()//{path: './.env'})
 const db = knex({
     client: 'pg',
     connection: {
-        host: 'localhost',
+        host: 'localhost', //'postgres_container'
         user: 'postgres',
         password: process.env.PSW,
         database: 'wallet',
